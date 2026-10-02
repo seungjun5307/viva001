@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>조선 시대 심화 학습 퀴즈</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+        body {
+            font-family: 'Jua', sans-serif;
+            background-color: #fef08a;
+        }
+        .option-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .option-btn:hover {
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div id="app" class="bg-white rounded-3xl shadow-xl w-full max-w-2xl p-8">
+        <!-- 시작 화면 -->
+        <div id="start-screen" class="text-center">
+            <h1 class="text-4xl md:text-5xl text-blue-800 mb-6 leading-tight">조선 시대<br>심화 학습 퀴즈 도전!</h1>
+            <p class="text-lg text-gray-600 mb-8">초등학교 5학년 2학기 사회<br>조선의 건국부터 임진왜란, 병자호란까지 알아보아요.</p>
+            <button onclick="startQuiz()" class="bg-blue-500 hover:bg-blue-600 text-white text-2xl py-4 px-10 rounded-full shadow-lg transform transition hover:-translate-y-1">
+                퀴즈 시작하기
+            </button>
+        </div>
+
+        <!-- 퀴즈 화면 -->
+        <div id="quiz-screen" class="hidden">
+            <div class="flex justify-between items-center mb-6">
+                <span id="question-counter" class="text-xl text-blue-600 font-bold bg-blue-100 py-1 px-4 rounded-full"></span>
+                <span id="score-display" class="text-xl text-green-600 font-bold">점수: 0</span>
+            </div>
+            
+            <h2 id="question-text" class="text-2xl md:text-3xl text-gray-800 mb-8 leading-snug"></h2>
+            
+            <div id="options-container" class="grid grid-cols-1 gap-4 mb-8">
+                <!-- 선택지가 여기에 추가됩니다 -->
+            </div>
+
+            <!-- 해설 영역 (문제 풀이 후 표시) -->
+            <div id="feedback-container" class="hidden p-5 rounded-2xl mb-6">
+                <h3 id="feedback-title" class="text-2xl mb-2"></h3>
+                <p id="feedback-text" class="text-lg text-gray-700"></p>
+                <button onclick="nextQuestion()" class="mt-4 bg-gray-800 hover:bg-gray-900 text-white py-3 px-8 rounded-full text-lg w-full">
+                    다음 문제
+                </button>
+            </div>
+        </div>
+
+        <!-- 결과 화면 -->
+        <div id="result-screen" class="hidden text-center">
+            <h2 class="text-4xl text-blue-800 mb-4">퀴즈 완료!</h2>
+            <p class="text-2xl text-gray-700 mb-2">당신의 점수는?</p>
+            <div class="text-6xl text-red-500 mb-6 drop-shadow-md" id="final-score"></div>
+            <p id="result-message" class="text-xl text-gray-600 mb-8"></p>
+            <button onclick="resetQuiz()" class="bg-green-500 hover:bg-green-600 text-white text-xl py-4 px-10 rounded-full shadow-lg">
+                다시 풀기
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "1. 조선을 세운 이성계와 신진 사대부들이 나라를 다스리는 근본으로 삼은 학문은 무엇인가요?",
+                options: ["불교", "유교 (성리학)", "도교", "실학"],
+                answer: 1,
+                explanation: "고려 말 불교의 부패를 비판하며 등장한 신진 사대부들은 유교(성리학)를 바탕으로 새로운 나라 조선을 세웠습니다."
+            },
+            {
+                question: "2. 조선의 도읍인 한양(오늘날의 서울)이 가진 지리적 장점이 아닌 것은 무엇인가요?",
+                options: ["나라의 중앙에 있어 교통이 편리하다.", "한강이 있어 물을 구하고 물자를 옮기기 좋다.", "산으로 둘러싸여 있어 외적을 방어하기 좋다.", "농사지을 땅이 부족하여 무역에만 집중할 수 있다."],
+                answer: 3,
+                explanation: "한양 주변에는 평야가 있어 농사짓기에 좋았으며, 결코 척박하거나 농사지을 땅이 부족한 곳이 아니었습니다."
+            },
+            {
+                question: "3. 다음 중 세종 대왕 시기에 이루어 낸 과학 기술이나 문화의 발전이 아닌 것은 무엇인가요?",
+                options: ["백성을 위한 글자인 훈민정음 창제", "비의 양을 재는 측우기 발명", "천체의 움직임을 관찰하는 혼천의 제작", "부처의 힘으로 외적을 막기 위한 팔만대장경 조판"],
+                answer: 3,
+                explanation: "팔만대장경은 몽골의 침입을 부처의 힘으로 물리치기 위해 '고려 시대'에 만들어진 문화유산입니다."
+            },
+            {
+                question: "4. 조선 시대에 나라를 다스리는 기준이 된 가장 기본적인 법전의 이름은 무엇인가요?",
+                options: ["경국대전", "삼강행실도", "조선왕조실록", "동의보감"],
+                answer: 0,
+                explanation: "경국대전은 세조 때 만들기 시작하여 성종 때 완성된 조선 시대 최고의 법전입니다."
+            },
+            {
+                question: "5. 조선 시대 유교 질서를 백성들에게 널리 알리기 위해 충신, 효자, 열녀의 이야기를 글과 그림으로 엮은 책은 무엇인가요?",
+                options: ["경국대전", "삼국유사", "삼강행실도", "훈민정음 해례본"],
+                answer: 2,
+                explanation: "삼강행실도는 백성들이 글을 몰라도 이해하기 쉽도록 유교적 모범이 되는 사람들의 이야기를 그림과 함께 설명한 책입니다."
+            },
+            {
+                question: "6. 임진왜란 초기의 상황으로 알맞은 것은 무엇인가요?",
+                options: ["조선 수군이 먼저 일본으로 쳐들어가 공격했다.", "선조는 한양을 버리고 의주까지 피란을 갔다.", "명나라 군대가 전쟁 시작부터 끝까지 앞장서서 싸웠다.", "일본군은 거북선 때문에 부산포에 상륙하지 못했다."],
+                answer: 1,
+                explanation: "오랜 기간 평화를 누렸던 조선은 전쟁 준비가 부족하여 초반에 일본군에게 계속 패배했고, 선조 임금은 한양을 버리고 의주로 피란했습니다."
+            },
+            {
+                question: "7. 이순신 장군이 학이 날개를 편 모양(학익진 전법)으로 일본 수군을 크게 물리친 전투는 무엇인가요?",
+                options: ["행주 대첩", "귀주 대첩", "한산도 대첩", "살수 대첩"],
+                answer: 2,
+                explanation: "한산도 대첩은 임진왜란 3대 대첩 중 하나로, 이순신 장군이 이끄는 수군이 학익진을 펼쳐 일본 수군을 크게 무찌른 전투입니다."
+            },
+            {
+                question: "8. 임진왜란 때 나라를 지키기 위해 스스로 무기를 들고 일어난 백성들의 군대를 무엇이라고 부르나요?",
+                options: ["별무반", "삼별초", "의병", "광군"],
+                answer: 2,
+                explanation: "의병은 곽재우 등 양반부터 농민, 승려까지 다양한 계층의 백성들이 스스로 조직하여 나라를 지키기 위해 싸운 군대입니다."
+            },
+            {
+                question: "9. 병자호란 때 인조가 청나라 군대를 피해 들어가 끝까지 항전했던 곳은 어디인가요?",
+                options: ["강화도", "남한산성", "북한산성", "수원 화성"],
+                answer: 1,
+                explanation: "청나라 군대가 빠르게 쳐들어오자 인조는 강화도로 피란가지 못하고 남한산성으로 들어가 40여 일간 청나라에 맞서 싸웠습니다."
+            },
+            {
+                question: "10. 병자호란의 결과로 알맞은 것은 무엇인가요?",
+                options: ["조선이 청나라를 물리치고 영토를 넓혔다.", "조선과 청나라가 평등한 형제 관계를 맺었다.", "인조가 남한산성에서 나와 삼전도에서 청 태종에게 항복했다.", "소현 세자와 봉림 대군이 청나라 황제로 추대되었다."],
+                answer: 2,
+                explanation: "식량이 떨어지고 상황이 불리해지자, 인조는 남한산성에서 나와 삼전도에서 청 태종에게 무릎을 꿇고 신하와 임금의 관계를 맺는 굴욕적인 항복을 했습니다."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let isAnswered = false;
+
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const questionCounter = document.getElementById('question-counter');
+        const scoreDisplay = document.getElementById('score-display');
+        const feedbackContainer = document.getElementById('feedback-container');
+        const feedbackTitle = document.getElementById('feedback-title');
+        const feedbackText = document.getElementById('feedback-text');
+
+        function startQuiz() {
+            startScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            isAnswered = false;
+            feedbackContainer.classList.add('hidden');
+            optionsContainer.innerHTML = '';
+            
+            const currentQuestion = quizData[currentQuestionIndex];
+            questionText.innerText = currentQuestion.question;
+            questionCounter.innerText = `문제 ${currentQuestionIndex + 1} / ${quizData.length}`;
+            scoreDisplay.innerText = `점수: ${score * 10}`;
+
+            currentQuestion.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.innerText = option;
+                button.className = "option-btn bg-blue-50 text-blue-900 border-2 border-blue-200 hover:bg-blue-100 font-medium py-4 px-6 rounded-2xl text-left text-xl shadow-sm";
+                button.onclick = () => checkAnswer(index, button);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedIndex, selectedButton) {
+            if (isAnswered) return;
+            isAnswered = true;
+
+            const currentQuestion = quizData[currentQuestionIndex];
+            const buttons = optionsContainer.children;
+
+            if (selectedIndex === currentQuestion.answer) {
+                selectedButton.classList.replace('bg-blue-50', 'bg-green-100');
+                selectedButton.classList.replace('border-blue-200', 'border-green-400');
+                score++;
+                scoreDisplay.innerText = `점수: ${score * 10}`;
+                showFeedback(true, currentQuestion.explanation);
+            } else {
+                selectedButton.classList.replace('bg-blue-50', 'bg-red-100');
+                selectedButton.classList.replace('border-blue-200', 'border-red-400');
+                // 정답 표시
+                buttons[currentQuestion.answer].classList.replace('bg-blue-50', 'bg-green-100');
+                buttons[currentQuestion.answer].classList.replace('border-blue-200', 'border-green-400');
+                showFeedback(false, currentQuestion.explanation);
+            }
+
+            // 다른 버튼들 비활성화 스타일
+            for (let btn of buttons) {
+                btn.style.cursor = 'default';
+                btn.classList.remove('hover:bg-blue-100');
+            }
+        }
+
+        function showFeedback(isCorrect, explanation) {
+            feedbackContainer.classList.remove('hidden');
+            if (isCorrect) {
+                feedbackContainer.classList.remove('bg-red-50');
+                feedbackContainer.classList.add('bg-green-50');
+                feedbackTitle.innerText = "⭕ 정답입니다!";
+                feedbackTitle.className = "text-2xl mb-2 text-green-700 font-bold";
+            } else {
+                feedbackContainer.classList.remove('bg-green-50');
+                feedbackContainer.classList.add('bg-red-50');
+                feedbackTitle.innerText = "❌ 아쉽게도 오답입니다.";
+                feedbackTitle.className = "text-2xl mb-2 text-red-700 font-bold";
+            }
+            feedbackText.innerText = explanation;
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            
+            const finalScore = score * 10;
+            document.getElementById('final-score').innerText = `${finalScore}점`;
+            
+            let message = "";
+            if (finalScore === 100) {
+                message = "완벽해요! 조선 시대 박사님이네요! 🥳";
+            } else if (finalScore >= 70) {
+                message = "아주 잘했어요! 조선 시대에 대해 잘 알고 있군요! 👍";
+            } else if (finalScore >= 40) {
+                message = "좋아요! 틀린 문제는 해설을 보며 복습해 보아요. 👏";
+            } else {
+                message = "조금 더 공부가 필요해요. 다시 한번 도전해 볼까요? 💪";
+            }
+            document.getElementById('result-message').innerText = message;
+        }
+
+        function resetQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            resultScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
